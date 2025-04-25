@@ -5,22 +5,20 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>My Mood Ring</title>
     <link rel="stylesheet" href="styles.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Open+Sans:wght@400;600&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Open+Sans:wght@400;600&display=swap"
           rel="stylesheet" />
 </head>
 <body>
     <h1>My Mood Ring</h1>
-    <div id="main">
-        <div id="left-panel">
-            <div id="mood-ring"></div>
-        </div>
+    <div id="scene">
+        <div id="mood-ring"></div>
         <div id="playlist-panel" class="hidden">
             <h2 id="mood-display">Invoke Your Vibe</h2>
             <ul id="track-list" class="tracks"></ul>
         </div>
     </div>
 
-    <!-- CSV parser -->
+    <!-- PapaParse for CSV parsing -->
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
     <script src="script.js"></script>
 </body>

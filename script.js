@@ -1,17 +1,18 @@
-// 1) fortune-style mood words
+// 1) Fortune-teller mood words
 const moodWords = {
     morning: ['Awakening', 'Clarity', 'Radiance', 'Insight', 'Dawnlight'],
     afternoon: ['Flow', 'Revelation', 'Guidance', 'Serendipity', 'Focus'],
     evening: ['Mystic', 'Dreamtime', 'Eclipse', 'Twilight', 'Starlight']
 };
 
-// 2) element refs
+// 2) Element refs
+const scene = document.getElementById('scene');
 const ring = document.getElementById('mood-ring');
 const panel = document.getElementById('playlist-panel');
 const moodDisplay = document.getElementById('mood-display');
 const trackList = document.getElementById('track-list');
 
-// 3) helpers
+// 3) Helpers
 function getTimeOfDay() {
     const h = new Date().getHours();
     if (h >= 6 && h < 12) return 'morning';
@@ -35,18 +36,17 @@ function msToTime(ms) {
     return `${m}:${s}`;
 }
 
-// 4) main generator
+// 4) Main generate routine
 async function generatePlaylist() {
-    // crystal-ball press effect
-    ring.style.transform = 'scale(0.92)';
-    setTimeout(() => ring.style.transform = '', 200);
+    // 1) Animate ring to left
+    scene.classList.add('active');
 
-    // pick fortune word
+    // 2) Pick a mood word
     const slot = getTimeOfDay();
     const word = getRandom(moodWords[slot]);
     moodDisplay.textContent = `${word} Vibes`;
 
-    // parse CSV
+    // 3) Load CSV of that slot
     const url = `Data/${slot}.csv`;
     const { data } = await new Promise(res => {
         Papa.parse(url, {
@@ -55,23 +55,23 @@ async function generatePlaylist() {
         });
     });
 
-    // choose 20 random tracks
+    // 4) Pick 20 random tracks
     const picks = shuffle(data).slice(0, 20);
 
-    // render list
+    // 5) Render, stripping any replacement-chars and linking to Spotify
     trackList.innerHTML = picks.map(s => {
-        const name = s.master_metadata_track_name;
-        const artist = s.master_metadata_album_artist_name;
-        const len = msToTime(+s.ms_played || 0);
+        let name = s.master_metadata_track_name.replace(/\uFFFD/g, '');
+        let artist = s.master_metadata_album_artist_name.replace(/\uFFFD/g, '');
+        let uri = s.spotify_track_uri.startsWith('spotify:track:')
+            ? s.spotify_track_uri.replace('spotify:track:', 'https://open.spotify.com/track/')
+            : '#';
+        let len = msToTime(+s.ms_played || 0);
         return `<li>
-      <a href="#" tabindex="-1">${name} — ${artist}</a>
+      <a href="${uri}" target="_blank">${name} — ${artist}</a>
       <span class="length">${len}</span>
     </li>`;
     }).join('');
-
-    // reveal panel
-    panel.classList.add('visible');
 }
 
-// 5) wire click
+// 5) Wire the click
 ring.addEventListener('click', generatePlaylist);
