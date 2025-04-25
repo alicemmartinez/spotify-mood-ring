@@ -1,7 +1,7 @@
 * {
     box-sizing: border-box;
     margin: 0;
-    padding: 0
+    padding: 0;
 }
 
 body {
@@ -13,7 +13,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* center heading+scene */
+    justify-content: center;
     padding: 1rem;
 }
 
@@ -48,7 +48,7 @@ h1 {
 }
 
 @keyframes pulse {
-    0%,100% {
+    0%, 100% {
         box-shadow: inset 0 0 20px rgba(255,255,255,0.6), 0 0 30px rgba(168,140,255,0.7);
     }
 
@@ -73,6 +73,11 @@ h1 {
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    /* make it a column flex container and cap its height */
+    display: flex;
+    flex-direction: column;
+    max-height: 60vh;
+    /* hide/show via opacity and pointer-events */
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease, left 0.5s ease;
@@ -90,6 +95,8 @@ h1 {
     text-align: center;
     color: #f9d371;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    /* keep the header fixed in the flex layout */
+    flex: 0 0 auto;
 }
 
 ul.tracks {
@@ -121,6 +128,9 @@ ul.tracks {
         margin-left: 1rem;
     }
 
-.hidden {
-    visibility: hidden;
+/* make the track list itself scrollable */
+#track-list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-right: 0.5rem;
 }

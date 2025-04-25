@@ -38,15 +38,15 @@ function msToTime(ms) {
 
 // 4) Main generate routine
 async function generatePlaylist() {
-    // 1) Animate ring to left
+    // animate ring and reveal panel
     scene.classList.add('active');
 
-    // 2) Pick a mood word
+    // pick a mood word
     const slot = getTimeOfDay();
     const word = getRandom(moodWords[slot]);
     moodDisplay.textContent = `${word} Vibes`;
 
-    // 3) Load CSV of that slot
+    // load CSV of that slot
     const url = `Data/${slot}.csv`;
     const { data } = await new Promise(res => {
         Papa.parse(url, {
@@ -55,10 +55,10 @@ async function generatePlaylist() {
         });
     });
 
-    // 4) Pick 20 random tracks
+    // pick 20 random tracks
     const picks = shuffle(data).slice(0, 20);
 
-    // 5) Render, stripping any replacement-chars and linking to Spotify
+    // render list with links
     trackList.innerHTML = picks.map(s => {
         let name = s.master_metadata_track_name.replace(/\uFFFD/g, '');
         let artist = s.master_metadata_album_artist_name.replace(/\uFFFD/g, '');
