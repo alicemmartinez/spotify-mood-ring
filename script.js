@@ -1,4 +1,4 @@
-// 1) Define your moods as objects with parallel word+color arrays
+// 1) Mood buckets with aligned words + shades
 const moods = {
     morning: {
         words: ['Awakening', 'Clarity', 'Radiance', 'Insight', 'Dawnlight'],
@@ -14,44 +14,56 @@ const moods = {
     }
 };
 
-// 2) Helper to pick a random element
+// refs
+const scene = document.getElementById('scene');
+const ring = document.getElementById('mood-ring');
+const moodDisp = document.getElementById('mood-display');
+const trackList = document.getElementById('track-list');
+
+// helpers
 function getRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+function msToTime(ms) {
+    const sec = Math.floor(ms / 1000),
+        m = String(Math.floor(sec / 60)).padStart(2, '0'),
+        s = String(sec % 60).padStart(2, '0');
+    return `${m}:${s}`;
+}
 
-// 3) In your generatePlaylist, replace the slot logic with:
+// main
 async function generatePlaylist() {
-    // animate ring + show panel
     scene.classList.add('active');
 
-    // pick a random mood type first
-    const types = Object.keys(moods);           // ['morning','afternoon','evening']
-    const slot = getRandom(types);             // e.g. 'evening'
+    // 1. pick a mood type and index
+    const types = Object.keys(moods);
+    const slot = getRandom(types);
+    const idx = Math.floor(Math.random() * moods[slot].words.length);
 
-    // pick a random index within that mood
-    const { words, colors } = moods[slot];
-    const i = Math.floor(Math.random() * words.length);
-    const word = words[i];                     // e.g. 'Eclipse'
-    const color = colors[i];                    // matching shade
+    // 2. pick matching word + shade
+    const word = moods[slot].words[idx];
+    const color = moods[slot].colors[idx];
 
-    // update UI
-    moodDisplay.textContent = `${word} Vibes`;
-    ring.style.background = `
-    radial-gradient(
-      circle at 30% 30%,
-      #fff,
-      ${color} 80%
-    )`;
+    // 3. update ring + header
+    moodDisp.textContent = `${word} Vibes`;
+    ring.style.background = `radial-gradient(circle at 30% 30%, #fff, ${color} 80%)`;
 
-    // then load your CSV exactly as before using `slot` for the filename
-    const { data } = await new Promise(res => {
+    // 4. load CSV for that mood
+    const { data } = await new Promise(res =>
         Papa.parse(`Data/${slot}.csv`, {
             download: true, header: true, skipEmptyLines: true,
             complete: res
-        });
-    });
+        })
+    );
 
-    // pick & render 20 tracks
+    // 5. shuffle & take 20, then render
     const picks = shuffle(data).slice(0, 20);
     trackList.innerHTML = picks.map(s => {
         const name = s.master_metadata_track_name.replace(/\uFFFD/g, '');
@@ -67,5 +79,5 @@ async function generatePlaylist() {
     }).join('');
 }
 
-// 4) Don’t forget to wire up the click
+// 6. wire the click
 ring.addEventListener('click', generatePlaylist);
