@@ -1,15 +1,15 @@
-// 1) mood words per slot
+// 1) fortune-style mood words
 const moodWords = {
-    morning: ['Energizer', 'Sunburst', 'Lively', 'Radiant', 'Motivated'],
-    afternoon: ['Focus', 'Flow', 'Chill', 'Groove', 'Steady'],
-    evening: ['Dreamy', 'Mellow', 'Calm', 'Soothing', 'Easy']
+    morning: ['Awakening', 'Clarity', 'Radiance', 'Insight', 'Dawnlight'],
+    afternoon: ['Flow', 'Revelation', 'Guidance', 'Serendipity', 'Focus'],
+    evening: ['Mystic', 'Dreamtime', 'Eclipse', 'Twilight', 'Starlight']
 };
 
-// 2) elements
+// 2) element refs
 const ring = document.getElementById('mood-ring');
+const panel = document.getElementById('playlist-panel');
 const moodDisplay = document.getElementById('mood-display');
 const trackList = document.getElementById('track-list');
-const createButton = document.getElementById('create-playlist');
 
 // 3) helpers
 function getTimeOfDay() {
@@ -18,11 +18,9 @@ function getTimeOfDay() {
     if (h >= 12 && h < 18) return 'afternoon';
     return 'evening';
 }
-
 function getRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
-
 function shuffle(a) {
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -30,14 +28,20 @@ function shuffle(a) {
     }
     return a;
 }
+function msToTime(ms) {
+    const totalSec = Math.floor(ms / 1000);
+    const m = String(Math.floor(totalSec / 60)).padStart(2, '0');
+    const s = String(totalSec % 60).padStart(2, '0');
+    return `${m}:${s}`;
+}
 
-// 4) main
-let currentTracks = [];  // store URIs for create flow
-
+// 4) main generator
 async function generatePlaylist() {
-    ring.style.transform = 'scale(0.93)';
-    setTimeout(() => ring.style.transform = '', 150);
+    // crystal-ball press effect
+    ring.style.transform = 'scale(0.92)';
+    setTimeout(() => ring.style.transform = '', 200);
 
+    // pick fortune word
     const slot = getTimeOfDay();
     const word = getRandom(moodWords[slot]);
     moodDisplay.textContent = `${word} Vibes`;
@@ -51,38 +55,23 @@ async function generatePlaylist() {
         });
     });
 
-    // pick and render
+    // choose 20 random tracks
     const picks = shuffle(data).slice(0, 20);
-    currentTracks = picks
-        .map(s => s.spotify_track_uri)
-        .filter(uri => uri && uri.startsWith('spotify:track:'));
 
+    // render list
     trackList.innerHTML = picks.map(s => {
         const name = s.master_metadata_track_name;
         const artist = s.master_metadata_album_artist_name;
-        const uri = s.spotify_track_uri.replace('spotify:track:', 'https://open.spotify.com/track/');
-        return `<li><a href="${uri}" target="_blank">${name} — ${artist}</a></li>`;
+        const len = msToTime(+s.ms_played || 0);
+        return `<li>
+      <a href="#" tabindex="-1">${name} — ${artist}</a>
+      <span class="length">${len}</span>
+    </li>`;
     }).join('');
 
-    createButton.classList.remove('hidden');
+    // reveal panel
+    panel.classList.add('visible');
 }
 
-// 5) Spotify playlist creation (skeleton)
-async function createSpotifyPlaylist() {
-    // You'll need to implement OAuth (implicit or code flow) to get a user token.
-    // Then you can call:
-    //
-    // 1) GET https://api.spotify.com/v1/me to fetch user.id
-    // 2) POST https://api.spotify.com/v1/users/{user.id}/playlists
-    //    body: { name: `My Mood Ring ${new Date().toLocaleString()}`, public: false }
-    // 3) POST https://api.spotify.com/v1/playlists/{playlist.id}/tracks
-    //    body: { uris: currentTracks }
-    //
-    // Finally, window.open(playlist.external_urls.spotify)
-    //
-    alert('To fully create a Spotify playlist you’ll need to wire up OAuth + the Web API.');
-}
-
-// 6) event listeners
+// 5) wire click
 ring.addEventListener('click', generatePlaylist);
-createButton.addEventListener('click', createSpotifyPlaylist);
