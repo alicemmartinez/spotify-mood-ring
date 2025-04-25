@@ -1,14 +1,21 @@
-// 1) Fortune-teller mood words
+// script.js
+
+// 1) Mood words & color palettes
 const moodWords = {
     morning: ['Awakening', 'Clarity', 'Radiance', 'Insight', 'Dawnlight'],
     afternoon: ['Flow', 'Revelation', 'Guidance', 'Serendipity', 'Focus'],
     evening: ['Mystic', 'Dreamtime', 'Eclipse', 'Twilight', 'Starlight']
 };
 
-// 2) Element refs
+const moodColors = {
+    morning: ['#ffe082', '#ffd54f'],
+    afternoon: ['#a5d6a7', '#81c784'],
+    evening: ['#90caf9', '#64b5f6']
+};
+
+// 2) Refs
 const scene = document.getElementById('scene');
 const ring = document.getElementById('mood-ring');
-const panel = document.getElementById('playlist-panel');
 const moodDisplay = document.getElementById('mood-display');
 const trackList = document.getElementById('track-list');
 
@@ -36,46 +43,40 @@ function msToTime(ms) {
     return `${m}:${s}`;
 }
 
-// 4) Main generate routine
+// 4) Build playlist
 async function generatePlaylist() {
-    // 1. animate ring + show panel
     scene.classList.add('active');
 
-    // 2. pick a mood slot and word
+    // pick slot, word, and color
     const slot = getTimeOfDay();
     const word = getRandom(moodWords[slot]);
     moodDisplay.textContent = `${word} Vibes`;
 
-    // 3. set ring color class
-    ring.classList.remove('morning', 'afternoon', 'evening');
-    ring.classList.add(slot);
+    const color = getRandom(moodColors[slot]);
+    ring.style.background = `radial-gradient(circle at 30% 30%, #fff, ${color} 80%)`;
 
-    // 4. load CSV
-    const url = `Data/${slot}.csv`;
+    // load CSV
     const { data } = await new Promise(res => {
-        Papa.parse(url, {
+        Papa.parse(`Data/${slot}.csv`, {
             download: true, header: true, skipEmptyLines: true,
             complete: res
         });
     });
 
-    // 5. choose 20 random tracks
+    // pick and render 20 tracks
     const picks = shuffle(data).slice(0, 20);
-
-    // 6. render list using a normal hyphen
     trackList.innerHTML = picks.map(s => {
-        let name = s.master_metadata_track_name.replace(/\uFFFD/g, '');
-        let artist = s.master_metadata_album_artist_name.replace(/\uFFFD/g, '');
-        let uri = s.spotify_track_uri.startsWith('spotify:track:')
+        const name = s.master_metadata_track_name.replace(/\uFFFD/g, '');
+        const artist = s.master_metadata_album_artist_name.replace(/\uFFFD/g, '');
+        const uri = s.spotify_track_uri.startsWith('spotify:track:')
             ? s.spotify_track_uri.replace('spotify:track:', 'https://open.spotify.com/track/')
             : '#';
-        let len = msToTime(+s.ms_played || 0);
+        const len = msToTime(+s.ms_played || 0);
         return `<li>
-          <a href="${uri}" target="_blank">${name} - ${artist}</a>
-          <span class="length">${len}</span>
-        </li>`;
+      <a href="${uri}" target="_blank">${name} - ${artist}</a>
+      <span class="length">${len}</span>
+    </li>`;
     }).join('');
 }
 
-// 5) Wire it up
 ring.addEventListener('click', generatePlaylist);
