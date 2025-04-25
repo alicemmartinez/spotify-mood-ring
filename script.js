@@ -38,15 +38,19 @@ function msToTime(ms) {
 
 // 4) Main generate routine
 async function generatePlaylist() {
-    // animate ring and reveal panel
+    // 1. animate ring + show panel
     scene.classList.add('active');
 
-    // pick a mood word
+    // 2. pick a mood slot and word
     const slot = getTimeOfDay();
     const word = getRandom(moodWords[slot]);
     moodDisplay.textContent = `${word} Vibes`;
 
-    // load CSV of that slot
+    // 3. set ring color class
+    ring.classList.remove('morning', 'afternoon', 'evening');
+    ring.classList.add(slot);
+
+    // 4. load CSV
     const url = `Data/${slot}.csv`;
     const { data } = await new Promise(res => {
         Papa.parse(url, {
@@ -55,10 +59,10 @@ async function generatePlaylist() {
         });
     });
 
-    // pick 20 random tracks
+    // 5. choose 20 random tracks
     const picks = shuffle(data).slice(0, 20);
 
-    // render list with links
+    // 6. render list using a normal hyphen
     trackList.innerHTML = picks.map(s => {
         let name = s.master_metadata_track_name.replace(/\uFFFD/g, '');
         let artist = s.master_metadata_album_artist_name.replace(/\uFFFD/g, '');
@@ -67,11 +71,11 @@ async function generatePlaylist() {
             : '#';
         let len = msToTime(+s.ms_played || 0);
         return `<li>
-      <a href="${uri}" target="_blank">${name} — ${artist}</a>
-      <span class="length">${len}</span>
-    </li>`;
+          <a href="${uri}" target="_blank">${name} - ${artist}</a>
+          <span class="length">${len}</span>
+        </li>`;
     }).join('');
 }
 
-// 5) Wire the click
+// 5) Wire it up
 ring.addEventListener('click', generatePlaylist);
