@@ -1,68 +1,115 @@
-/* Basic Page Styling */
-body {
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    background-color: #f1f1f1;
-    color: #333;
+* {
+    box-sizing: border-box;
     margin: 0;
-    padding: 0;
+    padding: 0
 }
 
-header {
-    padding: 20px;
-    background-color: #4CAF50;
-    color: white;
+body {
+    font-family: 'Open Sans', sans-serif;
+    background: radial-gradient(circle at center, #ffecd2 0%, #fcb69f 100%);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #333;
+    overflow: hidden;
 }
 
 h1 {
-    margin: 0;
-    font-size: 2.5em;
+    font-family: 'Pacifico', cursive;
+    font-size: 3rem;
+    margin: 1.5rem 0;
+    color: #7b3e98;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
 
-/* Mood Ring Styling */
-.mood-ring {
-    margin: 40px auto;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ff4d4d, #4CAF50);
-    cursor: pointer;
+#container {
+    position: relative;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
 }
 
-.mood-ring-inner {
-    width: 150px;
-    height: 150px;
+/* Mood ring */
+#mood-ring {
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease-in-out;
+    background: conic-gradient( #ff9a9e 0%, #fad0c4 20%, #fad0c4 40%, #ff9a9e 60%, #e0c3fc 80%, #8ec5fc 100% );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transition: transform .2s ease;
 }
 
-/* Mood Description and Playlist */
-.mood-description, .playlist {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    #mood-ring:active {
+        transform: scale(0.93);
+    }
+
+#mood-ring-inner {
+    width: 130px;
+    height: 130px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
 }
 
-.mood-art img {
-    max-width: 100%;
-    border-radius: 10px;
+/* Playlist popup */
+#playlist-popup {
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%) translateX(120%);
+    width: 320px;
+    background: #191414;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    color: #fff;
+    padding: 1rem;
+    opacity: 0;
+    transition: transform .4s ease, opacity .4s ease;
+    pointer-events: none;
 }
 
-/* Playlist Items */
-ul#playlist-items {
-    list-style-type: none;
-    padding: 0;
+    #playlist-popup.visible {
+        transform: translateY(-50%) translateX(0);
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    #playlist-popup h2 {
+        font-size: 1.3rem;
+        margin-bottom: .7rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+ul.tracks {
+    list-style: none;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: .5rem;
 }
 
-    ul#playlist-items li {
-        padding: 5px 0;
-        border-bottom: 1px solid #ccc;
+    ul.tracks li {
+        font-size: .9rem;
+        margin: .4rem 0;
+        padding: .3rem;
+        border-radius: 4px;
+        transition: background .2s;
+        display: flex;
+        justify-content: space-between;
+    }
+
+        ul.tracks li:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+    ul.tracks a {
+        color: #1DB954;
+        text-decoration: none;
     }

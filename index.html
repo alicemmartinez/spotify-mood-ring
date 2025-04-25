@@ -1,123 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Digital Mood Ring</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            text-align: center;
-            padding: 2rem
-        }
-
-        #mood-ring {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto;
-            border-radius: 50%;
-            background: conic-gradient( #ff9a9e,#fad0c4,#fad0c4,#ff9a9e );
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        #mood-ring-inner {
-            width: 140px;
-            height: 140px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            transition: transform .2s ease;
-        }
-
-        #mood-display {
-            margin: 1rem 0;
-            font-size: 1.5rem
-        }
-
-        #playlist {
-            list-style: none;
-            padding: 0;
-            max-width: 400px;
-            margin: 0 auto
-        }
-
-            #playlist li {
-                border-bottom: 1px solid #eee;
-                padding: .5rem 0
-            }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Mood Ring</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&display=swap"
+          rel="stylesheet" />
 </head>
 <body>
-
-    <div id="mood-ring">
-        <div id="mood-ring-inner"></div>
+    <h1>My Mood Ring</h1>
+    <div id="container">
+        <div id="mood-ring"><div id="mood-ring-inner"></div></div>
+        <div id="playlist-popup">
+            <h2 id="mood-display">Your Vibe</h2>
+            <ul id="track-list" class="tracks"></ul>
+        </div>
     </div>
-    <div id="mood-display"></div>
-    <ul id="playlist"></ul>
 
     <!-- PapaParse for CSV parsing -->
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
-    <script>
-        const moodWords = {
-            morning: ['Energetic', 'Upbeat', 'Vibrant', 'Lively', 'Motivated'],
-            afternoon: ['Focused', 'Productive', 'Chill', 'Steady', 'Flowing'],
-            evening: ['Relaxed', 'Calm', 'Mellow', 'Soothing', 'Laid-back']
-        };
-
-        const ringInner = document.getElementById('mood-ring-inner');
-        const moodDisplay = document.getElementById('mood-display');
-        const playlistEl = document.getElementById('playlist');
-
-        function getTimeOfDay() {
-            const h = new Date().getHours();
-            if (h >= 6 && h < 12) return 'morning';
-            if (h >= 12 && h < 18) return 'afternoon';
-            return 'evening';
-        }
-
-        function getRandom(arr) {
-            return arr[Math.floor(Math.random() * arr.length)];
-        }
-
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        async function generatePlaylist() {
-            // small “pop” animation
-            ringInner.style.transform = 'scale(.9)';
-            setTimeout(() => ringInner.style.transform = '', 150);
-
-            const slot = getTimeOfDay();
-            const word = getRandom(moodWords[slot]);
-            moodDisplay.textContent = word;
-
-            // load the CSV for that slot
-            const url = `Data/${slot}.csv`;
-            const { data } = await new Promise(resolve =>
-                Papa.parse(url, {
-                    download: true,
-                    header: true,
-                    complete: resolve
-                })
-            );
-
-            // pick 20 random songs
-            const songs = shuffle(data).slice(0, 20);
-            playlistEl.innerHTML = songs
-                .map(s => `<li>${s.master_metadata_track_name} — ${s.master_metadata_album_artist_name}</li>`)
-                .join('');
-        }
-
-        document.getElementById('mood-ring')
-            .addEventListener('click', generatePlaylist);
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
