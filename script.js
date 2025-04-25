@@ -1,18 +1,22 @@
 // 1) Mood buckets with aligned words + shades
 const moods = {
     morning: {
-        words: ['Awakening', 'Clarity', 'Radiance', 'Insight', 'Dawnlight'],
+        // bright, energizing vibes
+        words: ['Energized', 'Sunny', 'Upbeat', 'Optimistic', 'Vibrant'],
         colors: ['#ffe082', '#ffd54f', '#ffca28', '#ffc107', '#ffb300']
     },
     afternoon: {
-        words: ['Flow', 'Revelation', 'Guidance', 'Serendipity', 'Focus'],
+        // steady, productive flow
+        words: ['Focused', 'Motivated', 'Inspired', 'Flowing', 'Creative'],
         colors: ['#a5d6a7', '#81c784', '#66bb6a', '#4caf50', '#388e3c']
     },
     evening: {
-        words: ['Mystic', 'Dreamtime', 'Eclipse', 'Twilight', 'Starlight'],
+        // winding-down feels
+        words: ['Chill', 'Mellow', 'Cozy', 'Dreamy', 'Serene'],
         colors: ['#90caf9', '#64b5f6', '#42a5f5', '#2196f3', '#1e88e5']
     }
 };
+
 
 // refs
 const scene = document.getElementById('scene');
